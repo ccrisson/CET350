@@ -19,10 +19,12 @@ class Program2 {
 
 		// Testing section
 		words[0] = new Word("Lappa");
+		words[0].incrementQuantity();
 		System.out.println(words[0].getWord() + words[0].getQuantity());
 		System.out.println(words[0].isWord("Lappa"));
 		System.out.println(words[0].isWordIgnoreCase("lappa"));
 		System.out.println(words[0].isWord("La"));
+
 	}
 }
 
@@ -43,6 +45,11 @@ class Word {
 	}
 	public int getQuantity() {
 		return quantity;
+	}
+
+	// Setter(s)
+	public void incrementQuantity() {
+		quantity++;
 	}
 
 	// Comparison methods
