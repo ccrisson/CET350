@@ -13,6 +13,7 @@ import java.util.*;
 class Program2 {
 	public static void main(String[] args) throws IOException {
 		
+		// Variable Declarations
 		String word = "";
 		String inbuffer = "";
 		Word[] words = new Word[100];
@@ -21,9 +22,12 @@ class Program2 {
 		String outFile = "";
 		String choice = "";
 		boolean overwrite = false;
+		int uniqueWords = 0;
+		int sumOfInts = 0;
+		// For keyboard input
 		BufferedReader kbd = new BufferedReader(
 			new InputStreamReader(System.in));
-
+		
 		// Populate variables with arguments if provided from 
 		// the command line
 		if(args.length > 1) {
@@ -51,10 +55,11 @@ class Program2 {
 		}
 		// Check if output file exists
 		// Condition - keeps running until the file does not exist 
-		//             or overwrite = true 
+		//             OR overwrite = true 
 		while((fileExists(outFile) && !overwrite) && (go)){
 			System.out.println(outFile + " already exists. Enter 1 to enter a new file name. Enter 2 to backup " + outFile 
 				+ "Enter 3 to overwrite. Enter nothing to quit.");
+			// Get and process users choice
 			choice = kbd.readLine();
 			if (choice.equals("")) {
 				go = false;
@@ -80,13 +85,88 @@ class Program2 {
 			} 
 		}
 
+		// If they havent quit yet
 		if (go) {
-			StringTokenizer inline = new StringTokenizer(
-				inbuffer, " \t\n!@#$%^&*()_-+=[]{}\\|\":;/.,<>");
-			// Read file
+			// Open the input file
+			File inF = new File(inFile);
+			// Open a buffered reader with the input file 
+			BufferedReader in  = null;
+			try {
+				in = new BufferedReader(new FileReader(inF));
+			}
+			catch (IOException e){
+				System.out.println(inF + " not found. Quitting");
+				go = false;
+			}
+			// Loop while the input file is not EOF
+			while((inbuffer = in.readLine()) != null){
+				// Construct StringTokenizer with updated string
+				StringTokenizer inline = new StringTokenizer(
+					inbuffer, " \t\n!@#$%^&*()_-+=[]{}\\|\":;/.,<>");
+				// Loop while tokenizer has tokens left
+				while((inline.countTokens()) != 0) {
+					word = inline.nextToken();
+					// Check if word is an Integer
+					if (isInt(word)){
+						sumOfInts = sumOfInts + Integer.parseInt(word);
+					} else {
+						// Check that word begins with alpha char
+						// If it doesn't - move along
+						if (Character.isLetter(word.charAt(0))){
+							// Check if the words array is empty
+							if(words[0] != null) {
+								wordSearch(word, words);
+							} else {
+								words[0] = new Word(word);
+							}
+						}	
+					}
+					
+				}
+			}
+
+
+			//Write to output file
+			FileWriter fileWriter = new FileWriter(outFile);
+			PrintWriter printWriter = new PrintWriter(fileWriter);
+			// Write the array
+			for (int i = 0; i < words.length; i++) {
+				if (words[i] != null) {
+					uniqueWords++;
+					printWriter.printf("%s %d%n",words[i].getWord(), words[i].getQuantity());
+				}
+			}
+			// Write the numbers
+			printWriter.printf("%d%n",uniqueWords);
+			printWriter.printf("%d%n",sumOfInts);
+			printWriter.close();
 		}
 	} // End main
 
+	public static void wordSearch(String word, Word[] words) {
+		boolean exists = false;
+		int i = 0;
+		while ((words[i] != null) && (!exists)) {
+			if (words[i].isWordIgnoreCase(word)) {
+				words[i].incrementQuantity();
+				exists = true;
+			}
+			i++;
+		}
+		if (!exists && (i < 99)) {
+			words[i] = new Word(word);
+		}
+	}
+
+	public static boolean isInt(String str) {
+		int num = 0;
+		try {
+			num = Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 	public static boolean fileExists(String name) {
 		boolean exist = false;
 		if (name.length() != 0) {
@@ -98,8 +178,13 @@ class Program2 {
 
 	public static void backUp(String file) {
 		String backupFileName = file.substring(0, file.lastIndexOf(".")
-			+ 1).concat(".bak") ;
-		System.out.println("Need to add backup feature " + file);
+			+ 1).concat("bak") ;
+		File old = new File(file);
+		File bak = new File(backupFileName);
+		if (fileExists(backupFileName)) {
+			bak.delete();
+		}
+		old.renameTo(bak);
 	}
 }
 
