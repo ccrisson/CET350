@@ -11,21 +11,66 @@ import java.io.*;
 import java.util.*;
 
 class Program2 {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		String word = "";
 		String inbuffer;
 		Word[] words = new Word[100];
+		boolean go = true;
+		String inFile = "";
+		String outFile = "";
+		String choice = "";
 
-		// Testing section
-		words[0] = new Word("Lappa");
-		words[0].incrementQuantity();
-		System.out.println(words[0].getWord() + words[0].getQuantity());
-		System.out.println(words[0].isWord("Lappa"));
-		System.out.println(words[0].isWordIgnoreCase("lappa"));
-		System.out.println(words[0].isWord("La"));
+		BufferedReader kbd = new BufferedReader(
+			new InputStreamReader(System.in));
+
+		// Populate variables with arguments if provided from 
+		// the command line
+		if(args.length > 1) {
+			outFile = args[1];
+		}
+		if(args.length > 0) {
+			inFile = args[0];
+		}
+
+		// Check/Prompt for input file
+		while((!fileExists(inFile)) && (go)){
+			System.out.println("Please enter an input file name. Enter nothing to quit");
+			inFile = kbd.readLine();
+			if (inFile.equals("")){
+				go = false;
+			}
+		}
+		// Check/Prompt for output file
+		if(outFile.equals("") && (go)) {
+			System.out.println("Please enter an output file name. Enter nothing to quit");
+			outFile = kbd.readLine();
+			if (outFile.equals("")){
+				go = false;
+			}
+		}
+		// Check if output file exists
+		while((fileExists(outFile)) && (go)){
+			System.out.println("That file already exists. Enter 1 to enter a new file name. Enter nothing to quit. Enter 2 to overwrite");
+			choice = kbd.readLine();
+			if (choice.equals("")) {
+				go = false;
+			} 
+		}
+		
+
 
 	}
+
+	public static boolean fileExists(String name) {
+		boolean exist = false;
+		if (name.length() != 0) {
+			File file = new File(name);
+			exist = file.exists();
+		}
+		return exist;
+	}
+
 }
 
 // Word class is used to hold each unique word and the quantity
