@@ -14,13 +14,13 @@ class Program2 {
 	public static void main(String[] args) throws IOException {
 		
 		String word = "";
-		String inbuffer;
+		String inbuffer = "";
 		Word[] words = new Word[100];
 		boolean go = true;
 		String inFile = "";
 		String outFile = "";
 		String choice = "";
-
+		boolean overwrite = false;
 		BufferedReader kbd = new BufferedReader(
 			new InputStreamReader(System.in));
 
@@ -35,7 +35,7 @@ class Program2 {
 
 		// Check/Prompt for input file
 		while((!fileExists(inFile)) && (go)){
-			System.out.println("Please enter an input file name. Enter nothing to quit");
+			System.out.println("Please enter an input file name. Enter nothing to quit.");
 			inFile = kbd.readLine();
 			if (inFile.equals("")){
 				go = false;
@@ -43,24 +43,49 @@ class Program2 {
 		}
 		// Check/Prompt for output file
 		if(outFile.equals("") && (go)) {
-			System.out.println("Please enter an output file name. Enter nothing to quit");
+			System.out.println("Please enter an output file name. Enter nothing to quit.");
 			outFile = kbd.readLine();
 			if (outFile.equals("")){
 				go = false;
 			}
 		}
 		// Check if output file exists
-		while((fileExists(outFile)) && (go)){
-			System.out.println("That file already exists. Enter 1 to enter a new file name. Enter nothing to quit. Enter 2 to overwrite");
+		// Condition - keeps running until the file does not exist 
+		//             or overwrite = true 
+		while((fileExists(outFile) && !overwrite) && (go)){
+			System.out.println(outFile + " already exists. Enter 1 to enter a new file name. Enter 2 to backup " + outFile 
+				+ "Enter 3 to overwrite. Enter nothing to quit.");
 			choice = kbd.readLine();
 			if (choice.equals("")) {
 				go = false;
+			} else if (choice.equals("1")) {
+				System.out.println("Please enter an output file name. Enter nothing to quit.");
+				outFile = kbd.readLine();
+				if (outFile.equals("")){
+					go = false;
+				}
+			} else if (choice.equals("2")) {
+				backUp(outFile);
+				if (outFile.equals(inFile)) {
+					System.out.println("Can not overwrite the input file");
+				} else {
+					overwrite = true;
+				}
+			} else if (choice.equals("3")) {
+				if (outFile.equals(inFile)) {
+					System.out.println("Can not overwrite the input file");
+				} else {
+					overwrite = true;
+				}
 			} 
 		}
-		
 
-
-	}
+		if (go) {
+			StringTokenizer inline = new StringTokenizer(
+				inbuffer, " \t\n!@#$%^&*()_-+=[]{}\\|\":;/.,<>");
+			// Read file
+		}
+	} // End main
 
 	public static boolean fileExists(String name) {
 		boolean exist = false;
@@ -71,6 +96,11 @@ class Program2 {
 		return exist;
 	}
 
+	public static void backUp(String file) {
+		String backupFileName = file.substring(0, file.lastIndexOf(".")
+			+ 1).concat(".bak") ;
+		System.out.println("Need to add backup feature " + file);
+	}
 }
 
 // Word class is used to hold each unique word and the quantity
