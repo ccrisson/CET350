@@ -46,7 +46,7 @@ class Program2 {
 			}
 		}
 		// Check/Prompt for output file
-		if(outFile.equals("") && (go)) {
+		if((outFile.equals("")) && (go)) {
 			System.out.println("Please enter an output file name. Enter nothing to quit.");
 			outFile = kbd.readLine();
 			if (outFile.equals("")){
@@ -58,7 +58,7 @@ class Program2 {
 		//             OR overwrite = true 
 		while((fileExists(outFile) && !overwrite) && (go)){
 			System.out.println(outFile + " already exists. Enter 1 to enter a new file name. Enter 2 to backup " + outFile 
-				+ "Enter 3 to overwrite. Enter nothing to quit.");
+				+ " Enter 3 to overwrite. Enter nothing to quit.");
 			// Get and process users choice
 			choice = kbd.readLine();
 			if (choice.equals("")) {
@@ -98,49 +98,54 @@ class Program2 {
 				System.out.println(inF + " not found. Quitting");
 				go = false;
 			}
-			// Loop while the input file is not EOF
-			while((inbuffer = in.readLine()) != null){
-				// Construct StringTokenizer with updated string
-				StringTokenizer inline = new StringTokenizer(
-					inbuffer, " \t\n!@#$%^&*()_-+=[]{}\\|\":;/.,<>");
-				// Loop while tokenizer has tokens left
-				while((inline.countTokens()) != 0) {
-					word = inline.nextToken();
-					// Check if word is an Integer
-					if (isInt(word)){
-						sumOfInts = sumOfInts + Integer.parseInt(word);
-					} else {
-						// Check that word begins with alpha char
-						// If it doesn't - move along
-						if (Character.isLetter(word.charAt(0))){
-							// Check if the words array is empty
-							if(words[0] != null) {
-								wordSearch(word, words);
-							} else {
-								words[0] = new Word(word);
-							}
-						}	
+			if (go){
+				// Loop while the input file is not EOF
+				while((inbuffer = in.readLine()) != null){
+					// Construct StringTokenizer with updated string
+					StringTokenizer inline = new StringTokenizer(
+						inbuffer, " \t\n!@#$%^&*()_+=[]{}\\|\":;/.,<>");
+					// Loop while tokenizer has tokens left
+					while((inline.countTokens()) != 0) {
+						word = inline.nextToken();
+						// Check if word is an Integer
+						if (isInt(word)){
+							sumOfInts = sumOfInts + Integer.parseInt(word);
+						} else {
+							// Check that word begins with alpha char
+							// If it doesn't - move along
+							if (Character.isLetter(word.charAt(0))){
+								// Check if the words array is empty
+								if(words[0] != null) {
+									wordSearch(word, words);
+								} else {
+									words[0] = new Word(word);
+								}
+							}	
+						}
+						
 					}
-					
 				}
 			}
+		}
 
+		
 
+		if (go) {
 			//Write to output file
 			FileWriter fileWriter = new FileWriter(outFile);
-			PrintWriter printWriter = new PrintWriter(fileWriter);
-			// Write the array
-			for (int i = 0; i < words.length; i++) {
-				if (words[i] != null) {
-					uniqueWords++;
-					printWriter.printf("%s %d%n",words[i].getWord(), words[i].getQuantity());
+				PrintWriter printWriter = new PrintWriter(fileWriter);
+				// Write the array
+				for (int i = 0; i < words.length; i++) {
+					if (words[i] != null) {
+						uniqueWords++;
+						printWriter.printf("%s %d%n",words[i].getWord(), words[i].getQuantity());
+					}
 				}
-			}
-			// Write the numbers
-			printWriter.printf("%d%n",uniqueWords);
-			printWriter.printf("%d%n",sumOfInts);
-			printWriter.close();
-		}
+				// Write the numbers
+				printWriter.printf("Unique words: %d%n",uniqueWords);
+				printWriter.printf("Sum of integers: %d%n",sumOfInts);
+				printWriter.close();
+		} 
 	} // End main
 
 	public static void wordSearch(String word, Word[] words) {
