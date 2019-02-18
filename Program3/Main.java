@@ -8,9 +8,11 @@ import java.awt.event.*;
 
 class Main extends Frame implements ActionListener, WindowListener{
 	String path = System.getProperty("user.dir");
-
+	File f = new File(path);
+	ArrayList<String> fileNames = new ArrayList<String>(Arrays.asList(f.list()));
 	List fileView = new List();
 	Label sourceLabel;
+
 	public Main(){
 		// Hold the origin location for the frame
 		// Set Frame size
@@ -22,8 +24,8 @@ class Main extends Frame implements ActionListener, WindowListener{
 
 	
 		
-		File f = new File(path);
-		ArrayList<String> fileNames = new ArrayList<String>(Arrays.asList(f.list()));
+		
+		
 
 		// Set default frame properties
 		this.setLayout(new GridBagLayout());
@@ -40,7 +42,7 @@ class Main extends Frame implements ActionListener, WindowListener{
 			if (f.getParentFile().exists()) {
 				fileView.add("..");
 			} 
-		}catch (NullPointerException e){
+		}catch (NullPointerException err){
 			// Folder is root	
 		}
 		
@@ -72,7 +74,7 @@ class Main extends Frame implements ActionListener, WindowListener{
 		gbc.gridwidth = GridBagConstraints.NONE;
 		this.add(fileLabel,gbc);
 
-		TextField fileTextField = new TextField("asdfjkla;ldkfja");
+		TextField fileTextField = new TextField("");
 		gbc.gridwidth = GridBagConstraints.RELATIVE;
 		this.add(fileTextField,gbc);
 
@@ -123,10 +125,50 @@ class Main extends Frame implements ActionListener, WindowListener{
 
 	public void actionPerformed(ActionEvent e){
 		Object source = e.getSource();
-		//System.out.println(e.getSource());
-		fileView.add("something happened");
+		File temp;
+		// Clicked in file view
 		if(source == this.fileView){
-			sourceLabel.setText("Source: " + path + fileView.getSelectedItem());
+			temp = new File(path + "\\" + fileView.getSelectedItem());
+			System.out.println(temp);
+			if(fileView.getSelectedItem() == ".."){
+				f = f.getParentFile();
+				fileView.removeAll();	
+				fileNames.removeAll(fileNames);
+				fileNames = new ArrayList<String>(Arrays.asList(f.list()));
+				try{
+					if (f.getParentFile().exists()) {
+						fileView.add("..");
+					} 
+				}catch (NullPointerException err){
+					// Folder is root	
+				}
+				for(int i = 0; i < fileNames.size(); i++){
+					fileView.add(fileNames.get(i));
+				}
+			} else { // Clicked something else in file view
+				if(temp.isDirectory()){
+					f = temp;
+					fileView.removeAll();	
+					fileNames.removeAll(fileNames);
+					fileNames = new ArrayList<String>(Arrays.asList(f.list()));
+					try{
+						if (f.getParentFile().exists()) {
+							fileView.add("..");
+						} 
+					}catch (NullPointerException err){
+						// Folder is root	
+					}
+					for(int i = 0; i < fileNames.size(); i++){
+						fileView.add(fileNames.get(i));
+					} 
+				}
+				else {
+					//sourceLabel.setText("Source: " + path + fileView.getSelectedItem());
+					sourceLabel.setText("Source: " + temp);
+				}	
+			} 
+			// reset path
+			path = f.getPath();
 		}
 	}
 
