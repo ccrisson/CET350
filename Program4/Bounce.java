@@ -46,8 +46,8 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 	int scrollBlockIncrement = 25;
 	int scrollValue = 25;
 	int shapeSize = 25;
-	long delay;
 	int DELAY = 5;
+	long delay = 5;
 	boolean pause = false;
 	Screen s = new Screen(shapeSize);
 
@@ -69,7 +69,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 	}
 
 	public void initComponents(){
-		runButton =  new Button("Run");
+		runButton =  new Button("Pause");
 		shapeButton = new Button("Circle");
 		tailButton = new Button("Tail");
 		clearButton = new Button("Clear");
@@ -166,12 +166,12 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		while(true){
 			try{
-				thread.sleep(10);
+				thread.sleep(delay);
 				while(!pause){
 					s.step();
 					s.repaint();
 					try{
-						thread.sleep(5);
+						thread.sleep(delay);
 					} catch(InterruptedException e){}
 				}
 			} catch(InterruptedException e){}	
@@ -270,7 +270,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     public void adjustmentValueChanged(AdjustmentEvent e){
     	Object obj = e.getSource();
     	if(obj == speedScroll){
-    		delay = (long)(DELAY * (scrollMax - scrollVisible) / 100);
+    		delay = (long)(DELAY * (double)(scrollMax - scrollVisible + 1) / 100);
     		thread.interrupt();
     	}
     	if(obj == sizeScroll){
@@ -286,8 +286,8 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		private boolean tail = false;
 		private boolean clear = false;
 		private int xPosition = 100, yPosition = 100;
-		private int xLast, yLast;
 		private int xSlope  = 1, ySlope = 1;
+		private int xLast = xSlope, yLast = ySlope;
 		Rectangle shape = new Rectangle(10,10,10,10);
 		public Screen(int shapeSize){
 			this.shapeSize = shapeSize;
