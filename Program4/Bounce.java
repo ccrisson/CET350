@@ -5,105 +5,191 @@
   Chris Crisson CRI4537@calu.edu
   Matthew Bedillion BED9714@calu.edu
   Mark Blatnik BLA9072@calu.edu
-  Josh Williams WIL6155@calu.edu
-  implements WindowListener, ActionListener, AdjustmentListener, 
+  Josh Williams WIL6155@calu.edu 
 */
+ import java.lang.*;
  import java.awt.*;
  import java.awt.event.*;
-
-class Bounce extends Frame implements WindowListener, Runnable{
+ import java.awt.Dimension;
+class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener{
+	Insets I;
 	private Thread thread;
-	Button runButton =  new Button("Run");
-	Button shapeButton = new Button("Circle");
-	Button tailButton = new Button("Tail");
-	Button clearButton = new Button("Clear");
-	Button quitButton = new Button("Quit");
-	Scrollbar speedScroll = new Scrollbar(Scrollbar.HORIZONTAL);
-	Scrollbar sizeScroll = new Scrollbar(Scrollbar.HORIZONTAL);
-	Label speedLabel = new Label("Speed");
-	Label sizeLabel = new Label("Size");
+
+	Button runButton;
+	Button shapeButton;
+	Button tailButton;
+	Button clearButton;
+	Button quitButton;
+	Scrollbar speedScroll;
+	Scrollbar sizeScroll;
+	Label speedLabel;
+	Label sizeLabel;
+	
+	int screenHeight;
+	int screenWidth;
+	int buttonWidth = 60;
+	int buttonHeight = 20;
+	int scrollbarWidth = 100;
+	int buttonGap = 10;
+	int sideSpacer;
+	int controlPanelHeight = buttonHeight + (3 * buttonGap);
+	int windowWidth = (buttonWidth * 5) + (buttonGap * 8) + 
+										(scrollbarWidth * 2);
+	int windowHeight = 600;
+	int minWindowWidth = (buttonGap * 8) + (scrollbarWidth * 2) +
+							(buttonWidth * 5);
+	int minWindowHeight = buttonHeight * 4 + 320;
+	int scrollMin = 1;
+	int scrollMax = 100;
+	int scrollVisible = 10;
+	int scrollUnitIncrement = 5;
+	int scrollBlockIncrement = 25;
+	int scrollValue = 25;
+	int shapeSize = 25;
+	long delay;
+	int DELAY = 5;
+	boolean pause = false;
+	Screen s = new Screen(shapeSize);
+
+	public Bounce(){
+		this.setLayout(null);
+		this.setVisible(true);
+		makeSheet();
+		initComponents();
+		sizeScreen();
+		start();	
+	}
+
+	public void makeSheet(){
+		I = getInsets();
+		screenWidth = windowWidth - I.left - I.right;
+		screenHeight = windowHeight - I.top - I.bottom - controlPanelHeight;
+		sideSpacer = (screenWidth - (2 * scrollbarWidth) - 
+						(5 * buttonWidth) - (6 * buttonGap)) /2;
+	}
+
+	public void initComponents(){
+		runButton =  new Button("Run");
+		shapeButton = new Button("Circle");
+		tailButton = new Button("Tail");
+		clearButton = new Button("Clear");
+		quitButton = new Button("Quit");
+		speedLabel = new Label("Speed");
+		sizeLabel = new Label("Size");
+
+		// Scrollbar setup
+		speedScroll = new Scrollbar(Scrollbar.HORIZONTAL);
+		speedScroll.setMinimum(scrollMin);
+		speedScroll.setMaximum(scrollMax);
+		speedScroll.setVisibleAmount(scrollVisible);
+		speedScroll.setUnitIncrement(scrollUnitIncrement);
+		speedScroll.setBlockIncrement(scrollBlockIncrement);
+		sizeScroll = new Scrollbar(Scrollbar.HORIZONTAL);
+		sizeScroll.setMinimum(scrollMin);
+		sizeScroll.setMaximum(scrollMax);
+		sizeScroll.setVisibleAmount(scrollVisible);
+		sizeScroll.setUnitIncrement(scrollUnitIncrement);
+		sizeScroll.setBlockIncrement(scrollBlockIncrement);
+
+		// Listeners
+		this.addWindowListener(this);
+		this.addComponentListener(this);
+		speedScroll.addAdjustmentListener(this);
+		sizeScroll.addAdjustmentListener(this);
+		runButton.addActionListener(this);
+		shapeButton.addActionListener(this);
+		tailButton.addActionListener(this);
+		clearButton.addActionListener(this);
+		quitButton.addActionListener(this);
+
+		// Add components
+		this.add(s);
+		this.add(speedScroll);
+		this.add(speedLabel);
+		this.add(runButton);
+		this.add(shapeButton);
+		this.add(tailButton);
+		this.add(clearButton);
+		this.add(quitButton);
+		this.add(sizeScroll);
+		this.add(sizeLabel);
+	}
+
+	public void sizeScreen(){
+		this.setMinimumSize(new Dimension(minWindowWidth,minWindowHeight));
+
+		windowWidth = this.getWidth();
+		windowHeight = this.getHeight();
+		this.setSize(windowWidth, windowHeight);
+
+		s.setLocation(I.left, I.top);
+		s.setSize(windowWidth - I.left - I.right,
+				  windowHeight - (buttonHeight * 4) - I.top);
+		s.setScreenWidth(s.getWidth());
+		s.setScreenHeight(s.getHeight());
+
+		int screenWidth = s.getWidth();
+		int screenHeight = s.getHeight();// - (2 * buttonHeight)
+		int layoutX = (windowWidth / 2) - (buttonWidth / 2);
+		int layoutY = I.top + windowHeight + buttonHeight;
+		int buttonGap = (screenWidth - ((5 * buttonWidth) + (2 * scrollbarWidth))) / 8;
+
+		speedScroll.setBounds((I.left + buttonGap), (I.top + screenHeight), scrollbarWidth, buttonHeight);
+		speedLabel.setBounds((I.left + buttonGap + (buttonWidth/2)), I.top + screenHeight + buttonHeight, scrollbarWidth, buttonHeight);
+		runButton.setBounds((I.left + (2 * buttonGap) + scrollbarWidth), (I.top + screenHeight), buttonWidth,buttonHeight);
+		shapeButton.setBounds((I.left + (3 * buttonGap) + scrollbarWidth + buttonWidth), (I.top + screenHeight), buttonWidth,buttonHeight);
+		tailButton.setBounds((I.left + (4 * buttonGap) + scrollbarWidth + (2 * buttonWidth)), (I.top + screenHeight), buttonWidth,buttonHeight);
+		clearButton.setBounds((I.left + (5 * buttonGap) + scrollbarWidth + (3 * buttonWidth)), (I.top + screenHeight), buttonWidth,buttonHeight);
+		quitButton.setBounds((I.left + (6 * buttonGap) + scrollbarWidth + (4 * buttonWidth)), (I.top + screenHeight), buttonWidth,buttonHeight);
+		sizeScroll.setBounds((I.left + (7 * buttonGap) + scrollbarWidth + (5 * buttonWidth)), (I.top + screenHeight), scrollbarWidth,buttonHeight);
+		sizeLabel.setBounds((I.left + (7 * buttonGap) + (buttonWidth/2) + scrollbarWidth + (5 * buttonWidth)), (I.top + screenHeight + buttonHeight), buttonWidth,buttonHeight);
+	}
 
 	public void start(){
 		if (thread == null){
 			thread = new Thread(this);
 			thread.start();
-			//obj.repaint();
+			s.repaint();
 		}
+	}
+	public void stop() {
+		this.removeWindowListener(this);
+		this.removeComponentListener(this);
+		speedScroll.removeAdjustmentListener(this);
+		sizeScroll.removeAdjustmentListener(this);
+		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+		dispose();
+		System.exit(0);
 	}
 
 	public void run(){
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+		while(true){
+			try{
+				thread.sleep(10);
+				while(!pause){
+					s.step();
+					s.repaint();
+					try{
+						thread.sleep(5);
+					} catch(InterruptedException e){}
+				}
+			} catch(InterruptedException e){}	
+		}
 	}
 
-	public Bounce(int width,int height){
-		if(height < 100){
-			height = 100;
-		}
-		if(width < 775){
-			width = 775;
-		}
-		this.setLayout(null);
-		this.setSize(width, height);
-		this.setVisible(true);
-		addWindowListener(this);
-		// Speed scrollbar
-		this.add(speedScroll);
-		speedScroll.setSize(100, 20);
-		speedScroll.setLocation(30, height-75);
-		speedScroll.setVisible(true);
-		// Speed label
-		this.add(speedLabel);
-		speedLabel.setSize(100, 20);
-		speedLabel.setLocation(60, height-45);
-		speedLabel.setVisible(true);
-		// Run button
-		this.add(runButton);
-		runButton.setSize(75,20);
-		runButton.setLocation(150, height-75);
-		runButton.setVisible(true);
-		// Shape button
-		this.add(shapeButton);
-		shapeButton.setSize(75,20);
-		shapeButton.setLocation(250, height-75);
-		shapeButton.setVisible(true);
-		// Tail button
-		this.add(tailButton);
-		tailButton.setSize(75,20);
-		tailButton.setLocation(350, height-75);
-		tailButton.setVisible(true);
-		// Clear button
-		this.add(clearButton);
-		clearButton.setSize(75,20);
-		clearButton.setLocation(450, height-75);
-		clearButton.setVisible(true);
-		// Quit button
-		this.add(quitButton);
-		quitButton.setSize(75,20);
-		quitButton.setLocation(550, height-75);
-		quitButton.setVisible(true);
-		// Size scrollbar
-		this.add(sizeScroll);
-		sizeScroll.setSize(100, 20);
-		sizeScroll.setLocation(650, height-75);
-		sizeScroll.setVisible(true);
-		// Size label
-		this.add(sizeLabel);
-		sizeLabel.setSize(100, 20);
-		sizeLabel.setLocation(680, height-45);
-		sizeLabel.setVisible(true);
-	}
+	
 
 	public static void main(String args[]){
-		Bounce gui = new Bounce(650,650);
-	}
+		Bounce gui = new Bounce();
+}
 
 	public void windowOpened(WindowEvent e){
 
 	}
 
 	public void windowClosing(WindowEvent e){
-		this.removeWindowListener(this);
-		System.exit(0);
+		stop();
 	}
 
 	public void windowClosed(WindowEvent e){
@@ -124,5 +210,171 @@ class Bounce extends Frame implements WindowListener, Runnable{
 
 	public void windowDeactivated(WindowEvent e){
 
+	}
+
+	 public void componentResized(ComponentEvent e){
+        sizeScreen();
+    }
+
+    public void componentHidden(ComponentEvent e){
+
+    }
+
+    public void componentShown(ComponentEvent e){
+
+    }
+
+    public void componentMoved(ComponentEvent e){
+
+    }
+
+    public void actionPerformed(ActionEvent e){
+    	Object obj = e.getSource();
+    	
+    	if(obj == runButton){
+    		if(runButton.getLabel() == "Run"){
+    			runButton.setLabel("Pause");
+    			pause = false;
+    		}else{
+    			runButton.setLabel("Run");
+    			pause = true;
+    		}
+    	}
+    	if(obj == shapeButton){
+    		if(shapeButton.getLabel() == "Circle"){
+    			shapeButton.setLabel("Rectanlge");
+    			s.setRectangle(false);
+    		} else {
+    			shapeButton.setLabel("Circle");
+    			s.setRectangle(true);
+    		}
+    	}
+    	if(obj == tailButton){
+    		if(tailButton.getLabel() == "Tail"){
+    			s.setTail(true);
+    			tailButton.setLabel("No Tail");
+    		} else {
+    			s.setTail(false);
+    			tailButton.setLabel("Tail");
+    		}
+    	}
+    	if(obj == clearButton){
+    		s.setClear(true);
+    		s.repaint();
+    	}
+    	if(obj == quitButton){
+    		stop();
+    	}
+    }
+
+    public void adjustmentValueChanged(AdjustmentEvent e){
+    	Object obj = e.getSource();
+    	if(obj == speedScroll){
+    		delay = (long)(DELAY * (scrollMax - scrollVisible) / 100);
+    		thread.interrupt();
+    	}
+    	if(obj == sizeScroll){
+    		shapeSize = e.getValue();
+    		s.setShapeSize(shapeSize);
+    	}
+    }
+	class Screen extends Canvas{
+		private int screenWidth;
+		private int screenHeight;
+		private int shapeSize;
+		private boolean rectangle = true;
+		private boolean tail = false;
+		private boolean clear = false;
+		private int xPosition = 100, yPosition = 100;
+		private int xLast, yLast;
+		private int xSlope  = 1, ySlope = 1;
+		Rectangle shape = new Rectangle(10,10,10,10);
+		public Screen(int shapeSize){
+			this.shapeSize = shapeSize;
+		}
+		public void setScreenWidth(int screenWidth){ 
+            this.screenWidth = screenWidth;
+        }
+
+        public void setScreenHeight(int screenHeight){
+            this.screenHeight = screenHeight;
+        }
+        public void setRectangle(boolean rectangle) {
+            this.rectangle = rectangle;
+        }
+        public void setTail(boolean tail)
+        {
+            this.tail = tail;
+        }
+        public void setClear(boolean clear){
+        	this.clear = clear;
+        }
+        public void setShapeSize(int shapeSize){
+        	this.shapeSize = shapeSize;
+        }
+        public int getScreenHeight() {
+            return screenHeight;
+        }
+
+        public int getScreenWidth () {
+            return screenWidth;
+        }
+		public void paint(Graphics g){
+			g.setColor(Color.red);
+			g.drawRect(0,0,screenWidth-1,screenHeight-1);
+			update(g);
+		}
+		public void update(Graphics g){	
+			if(clear){
+				super.paint(g);
+				clear = false;
+				g.setColor(Color.red);
+				g.drawRect(0,0,screenWidth-1,screenHeight-1);
+			}
+			if(rectangle){
+				if(!tail){
+					g.setColor(Color.white);
+					g.drawRect(xLast,yLast,shapeSize,shapeSize);
+					g.fillRect(xLast,yLast,shapeSize,shapeSize);
+				} 
+				g.setColor(Color.black);
+				g.drawRect(xPosition,yPosition,shapeSize,shapeSize);
+				g.setColor(Color.gray);
+				g.fillRect(xPosition,yPosition,shapeSize,shapeSize);
+			} else{
+				if(!tail){
+					g.setColor(Color.white);
+					g.drawOval(xLast,yLast,shapeSize,shapeSize);
+					g.fillOval(xLast,yLast,shapeSize,shapeSize);
+				} 
+				g.setColor(Color.black);
+				g.drawOval(xPosition,yPosition,shapeSize,shapeSize);
+				g.setColor(Color.gray);
+				g.fillOval(xPosition,yPosition,shapeSize,shapeSize);
+			}
+			//super.paint(g);  
+			
+		}
+		public void step(){
+			if(xPosition + xSlope + shapeSize > screenWidth - 2){
+				xSlope = -1;
+				setShapeSize(screenWidth - xPosition - 2);
+			}
+			if(xPosition < 2){
+				xSlope = 1;
+			}
+			if(yPosition + ySlope + shapeSize > screenHeight - 2){
+				ySlope = -1;
+				setShapeSize(screenHeight - yPosition - 2);
+			}
+			if(yPosition < 2){
+				ySlope = 1;
+			}
+			xLast = xPosition;
+			yLast = yPosition;
+			xPosition = xPosition + xSlope;
+			yPosition = yPosition + ySlope;
+			repaint();
+		}
 	}
 }
