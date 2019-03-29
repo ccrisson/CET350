@@ -14,6 +14,10 @@
 class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener, MouseListener, MouseMotionListener{
 	Insets I;
 	private Thread thread;
+	private Panel sheet = new Panel();
+	private Panel control = new Panel();
+
+	//sheet.Layout(new BorderLayout());
 
 	Button runButton;
 	Button shapeButton;
@@ -51,8 +55,21 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 	boolean pause = false;
 	Screen s = new Screen(shapeSize);
 
+	GridBagLayout gbl = new GridBagLayout();
+  
+  	GridBagConstraints gbc = new GridBagConstraints();
+	// gbc.anchor = GridBagConstraints.WEST;
+	//gbc.weightx = 1.0;
+	// gbc.weighty = 1.0;
+	// gbc.gridwidth = 10;
+	// gbc.gridheight = 10;
+	// gbc.gridx = 0;
+	// gbc.gridy = 0;
+
 	public Bounce(){
-		this.setLayout(null);
+		this.setLayout(new BorderLayout());
+		this.sheet.setLayout(new BorderLayout());
+		this.control.setLayout(gbl);
 		this.setVisible(true);
 		makeSheet();
 		initComponents();
@@ -103,16 +120,91 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		quitButton.addActionListener(this);
 
 		// Add components
-		this.add(s);
-		this.add(speedScroll);
-		this.add(speedLabel);
-		this.add(runButton);
-		this.add(shapeButton);
-		this.add(tailButton);
-		this.add(clearButton);
-		this.add(quitButton);
-		this.add(sizeScroll);
-		this.add(sizeLabel);
+		sheet.add(s);
+		this.add(s, BorderLayout.CENTER);
+		this.add(control, BorderLayout.SOUTH);
+		
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbl.setConstraints(speedScroll, gbc);
+		control.add(speedScroll);
+
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbl.setConstraints(speedLabel, gbc);
+		control.add(speedLabel);
+
+		gbc.gridx = 2;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbl.setConstraints(runButton, gbc);
+		control.add(runButton);
+
+		gbc.gridx = 3;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbl.setConstraints(shapeButton, gbc);
+		control.add(shapeButton);
+
+		gbc.gridx = 4;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbl.setConstraints(tailButton, gbc);
+		control.add(tailButton);
+
+		gbc.gridx = 5;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbl.setConstraints(clearButton, gbc);
+		control.add(clearButton);
+
+		gbc.gridx = 6;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbl.setConstraints(quitButton, gbc);
+		control.add(quitButton);
+
+		gbc.gridx = 7;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 2;
+		gbc.gridheight = 1;
+		gbl.setConstraints(sizeScroll, gbc);
+		control.add(sizeScroll);
+
+		gbc.gridx = 7;
+		gbc.gridy = 1;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridwidth = 2;
+		gbc.gridheight = 1;
+		gbl.setConstraints(sizeLabel, gbc);
+		control.add(sizeLabel);
 	}
 
 	public void sizeScreen(){
@@ -134,7 +226,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		int layoutY = I.top + windowHeight + buttonHeight;
 		int buttonGap = (screenWidth - ((5 * buttonWidth) + (2 * scrollbarWidth))) / 8;
 
-		speedScroll.setBounds((I.left + buttonGap), (I.top + screenHeight), scrollbarWidth, buttonHeight);
+		/*speedScroll.setBounds((I.left + buttonGap), (I.top + screenHeight), scrollbarWidth, buttonHeight);
 		speedLabel.setBounds((I.left + buttonGap + (buttonWidth/2)), I.top + screenHeight + buttonHeight, scrollbarWidth, buttonHeight);
 		runButton.setBounds((I.left + (2 * buttonGap) + scrollbarWidth), (I.top + screenHeight), buttonWidth,buttonHeight);
 		shapeButton.setBounds((I.left + (3 * buttonGap) + scrollbarWidth + buttonWidth), (I.top + screenHeight), buttonWidth,buttonHeight);
@@ -142,7 +234,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		clearButton.setBounds((I.left + (5 * buttonGap) + scrollbarWidth + (3 * buttonWidth)), (I.top + screenHeight), buttonWidth,buttonHeight);
 		quitButton.setBounds((I.left + (6 * buttonGap) + scrollbarWidth + (4 * buttonWidth)), (I.top + screenHeight), buttonWidth,buttonHeight);
 		sizeScroll.setBounds((I.left + (7 * buttonGap) + scrollbarWidth + (5 * buttonWidth)), (I.top + screenHeight), scrollbarWidth,buttonHeight);
-		sizeLabel.setBounds((I.left + (7 * buttonGap) + (buttonWidth/2) + scrollbarWidth + (5 * buttonWidth)), (I.top + screenHeight + buttonHeight), buttonWidth,buttonHeight);
+		sizeLabel.setBounds((I.left + (7 * buttonGap) + (buttonWidth/2) + scrollbarWidth + (5 * buttonWidth)), (I.top + screenHeight + buttonHeight), buttonWidth,buttonHeight);*/
 	}
 
 	public void start(){
@@ -182,7 +274,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 
 	public static void main(String args[]){
 		Bounce gui = new Bounce();
-}
+	}
 
 	public void windowOpened(WindowEvent e){
 
