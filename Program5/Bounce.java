@@ -11,7 +11,7 @@
  import java.awt.*;
  import java.awt.event.*;
  import java.awt.Dimension;
-class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener, MouseListener{
+class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener, MouseListener, MouseMotionListener{
 	Insets I;
 	private Thread thread;
 
@@ -284,9 +284,28 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseEntered(MouseEvent e){
+
+    }
+
+    public void mouseReleased(MouseEvent e){
+
+    }
+
+    public void mousePressed(MouseEvent e){
     	
     }
 
+    public void mouseClicked(MouseEvent e){
+    	
+    }
+
+    public void mouseMoved(MouseEvent e){
+    	
+    }
+
+    public void mouseDragged(MouseEvent e){
+    	
+    }
 	class Screen extends Canvas{
 		private int screenWidth;
 		private int screenHeight;
