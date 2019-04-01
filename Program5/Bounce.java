@@ -380,7 +380,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseReleased(MouseEvent e){
-	makeRectangle(startx, endx, e.getX(), e.getY();
+	g.drawRect(startx, endx, e.getX(), e.getY();
 		      startx = null;
 		      endx = null;
 		      repaint();
