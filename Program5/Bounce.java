@@ -380,13 +380,18 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseReleased(MouseEvent e){
-
+	makeRectangle(startx, endx, e.getX(), e.getY();
+		      startx = null;
+		      endx = null;
+		      repaint();
     }
 
     public void mousePressed(MouseEvent e){
-    	
+    	startx = new Point(e.getX(), e.getY());
+	endx = startx;
+	repaint();
     }
-
+    
     public void mouseClicked(MouseEvent e){
     	
     }
@@ -396,8 +401,12 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseDragged(MouseEvent e){
-    	
+    	endx = new Point(e.getX(), e.getY());
+	    repaint();
     }
+	
+	Point startx, endx;
+	
 	class Screen extends Canvas{
 		private int screenWidth;
 		private int screenHeight;
