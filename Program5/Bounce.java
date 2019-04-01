@@ -118,6 +118,8 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		tailButton.addActionListener(this);
 		clearButton.addActionListener(this);
 		quitButton.addActionListener(this);
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 
 		// Add components
 		sheet.add(s);
@@ -380,7 +382,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseReleased(MouseEvent e){
-	g.drawRect(startx, endx, e.getX(), e.getY();
+	g.drawRect(startx.x, startx.y, e.getX(), e.getY();
 		      startx = null;
 		      endx = null;
 		      repaint();
