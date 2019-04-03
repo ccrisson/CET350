@@ -11,6 +11,7 @@
  import java.awt.*;
  import java.awt.event.*;
  import java.awt.Dimension;
+ import java.awt.Graphics;
 class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener, MouseListener, MouseMotionListener{
 	Insets I;
 	private Thread thread;
