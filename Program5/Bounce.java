@@ -1,5 +1,5 @@
 /*Bounce.java
-  Program 4
+  Program 5
   CET-350 Technical Computing Using Java
   Group 9
   Chris Crisson CRI4537@calu.edu
@@ -11,6 +11,7 @@
  import java.awt.*;
  import java.awt.event.*;
  import java.awt.Dimension;
+ import java.awt.Graphics;
 class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener, MouseListener, MouseMotionListener{
 	Insets I;
 	private Thread thread;
@@ -118,6 +119,8 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		tailButton.addActionListener(this);
 		clearButton.addActionListener(this);
 		quitButton.addActionListener(this);
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 
 		// Add components
 		sheet.add(s);
@@ -380,7 +383,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseReleased(MouseEvent e){
-	makeRectangle(startx, endx, e.getX(), e.getY();
+	g.drawRect(startx.x, startx.y, e.getX(), e.getY());
 		      startx = null;
 		      endx = null;
 		      repaint();
