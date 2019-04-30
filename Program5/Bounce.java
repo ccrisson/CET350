@@ -12,11 +12,14 @@
  import java.awt.event.*;
  import java.awt.Dimension;
  import java.awt.Graphics;
+ import java.util.Vector;
 class Bounce extends Frame implements WindowListener, Runnable, ActionListener, AdjustmentListener, ComponentListener, MouseListener, MouseMotionListener{
 	Insets I;
 	private Thread thread;
 	private Panel sheet = new Panel();
 	private Panel control = new Panel();
+
+	Vector<Rectangle> rectangles = new Vector();
 
 	//sheet.Layout(new BorderLayout());
 
@@ -66,6 +69,11 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 	// gbc.gridheight = 10;
 	// gbc.gridx = 0;
 	// gbc.gridy = 0;
+
+	Point curStart;
+	Point curEnd;
+	Point oldStart;
+	Point oldEnd;
 
 	public Bounce(){
 		this.setLayout(new BorderLayout());
@@ -119,7 +127,7 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 		tailButton.addActionListener(this);
 		clearButton.addActionListener(this);
 		quitButton.addActionListener(this);
-		this.addMouseListener(this);
+		s.addMouseListener(this);
 		this.addMouseMotionListener(this);
 
 		// Add components
@@ -383,20 +391,20 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseReleased(MouseEvent e){
-	g.drawRect(startx.x, startx.y, e.getX(), e.getY());
+	//drawRect(startx.x, startx.y, e.getX(), e.getY());
+
 		      startx = null;
 		      endx = null;
 		      repaint();
     }
 
     public void mousePressed(MouseEvent e){
-    	startx = new Point(e.getX(), e.getY());
-	endx = startx;
-	repaint();
+    	curStart = new Point(e.getX(), e.getY());
+	
     }
     
     public void mouseClicked(MouseEvent e){
-    	
+    	System.out.println(e.getClickCount());
     }
 
     public void mouseMoved(MouseEvent e){
@@ -404,8 +412,14 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
     }
 
     public void mouseDragged(MouseEvent e){
-    	endx = new Point(e.getX(), e.getY());
-	    repaint();
+    	//oldStart = curStart;
+    	curStart = new Point(e.getX(), e.getY());
+	    //repaint();
+	    int maxX = Math.max(oldStart.x, curStart.x);
+	    int minX = Math.min(oldStart.x, curStart.x);
+	    int maxY = Math.max(oldStart.y, curStart.y);
+	    int minY = Math.min(oldStart.y, curStart.y);
+	    rectangles.add(new Rectangle(minX,minY,maxX,maxY));
     }
 	
 	Point startx, endx;
@@ -484,7 +498,12 @@ class Bounce extends Frame implements WindowListener, Runnable, ActionListener, 
 				g.setColor(Color.gray);
 				g.fillOval(xPosition,yPosition,shapeSize,shapeSize);
 			}
-			//super.paint(g);  
+			//super.paint(g);
+			g.setColor(Color.black);
+			for(int i = 0; i < rectangles.size(); i++){
+				Rectangle r = rectangles.get(i);
+				g.fillRect((int)r.getX(),(int)r.getY(),(int)r.getWidth(),(int)r.getHeight());
+			}  
 			
 		}
 		public void step(){
