@@ -1,10 +1,19 @@
+/*CET 350
+Group 9
+Program 7
+  Chris Crisson CRI4537@calu.edu
+  Matthew Bedillion BED9714@calu.edu
+  Mark Blatnik BLA9072@calu.edu
+  Josh Williams WIL6155@calu.edu
+*/
+
 import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 //implements Runnable, WindowListener, ComponentListener, ActionListener, ItemListener
 
-public class Chat extends Frame implements WindowListener, ActionListener, ItemListener, ComponentListener{
+public class Chat extends Frame implements WindowListener, ActionListener, ItemListener, Runnable, ComponentListener{
 
 	MenuBar colorsMenuBar;
 	Menu textColorsMenu;
@@ -194,6 +203,7 @@ public class Chat extends Frame implements WindowListener, ActionListener, ItemL
 		statusTextArea.setEditable(false);
 		statusTextArea.setRows(3);
 		
+		
 		//Add components
 		mainWindow.setMenuBar(colorsMenuBar);
 		mainWindow.add(chatTextArea);
@@ -268,6 +278,7 @@ public class Chat extends Frame implements WindowListener, ActionListener, ItemL
 			chatTextArea.setForeground(Color.BLUE);
 		}
 	}
+	
 	public void windowOpened(WindowEvent e){
 
 	}
