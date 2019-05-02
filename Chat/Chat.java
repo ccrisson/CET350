@@ -331,7 +331,27 @@ public class Chat extends Frame implements WindowListener, ActionListener, ItemL
     }
 
     public void actionPerformed(ActionEvent e){
-    	Object obj = e.getSource();
+    	Object s = e.getSource();
+        if (s == startServer) { 
+            startServer.setEnabled(false);
+            boolean good;
+            //check port
+            if (port > 0 && port <= 65535)
+                good = true;
+            else {
+                good = false;
+                sysMessage("Invalid port (range 1-65535)");
+            }
+            if (good) {
+                try {
+                    if (listenSocket != null) {
+                        listenSocket.close();
+                        listenSocket = null;
+                    }
+		}
+	    }
+ 
+	Object obj = e.getSource();
     	if(obj == colors){
     		colorChooser();
     	}
