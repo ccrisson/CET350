@@ -11,9 +11,8 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
-//implements Runnable, WindowListener, ComponentListener, ActionListener, ItemListener
 
-public class Chat extends Frame implements WindowListener, ActionListener, ItemListener, Runnable, ComponentListener{
+public class Chat extends Frame implements WindowListener, ActionListener, ItemListener, ComponentListener{
 
 	MenuBar colorsMenuBar;
 	Menu textColorsMenu;
@@ -332,15 +331,15 @@ public class Chat extends Frame implements WindowListener, ActionListener, ItemL
 
     public void actionPerformed(ActionEvent e){
     	Object s = e.getSource();
-        if (s == startServer) { 
-            startServer.setEnabled(false);
+        if (s == serverButton) { 
+            serverButton.setEnabled(false);
             boolean good;
             //check port
             if (port > 0 && port <= 65535)
                 good = true;
             else {
                 good = false;
-                sysMessage("Invalid port (range 1-65535)");
+                statusTextArea.append("Invalid port (range 1-65535)\n");
             }
             if (good) {
                 try {
@@ -348,9 +347,9 @@ public class Chat extends Frame implements WindowListener, ActionListener, ItemL
                         listenSocket.close();
                         listenSocket = null;
                     }
-		}
-	    }
- 
+				}catch(IOException ioe){}
+	    	}
+ 	}
 	Object obj = e.getSource();
     	if(obj == colors){
     		colorChooser();
